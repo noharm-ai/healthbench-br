@@ -30,8 +30,8 @@ healthbench-br/
 │   │   └── evaluator.py    # Classe Evaluator principal
 │   └── reports/            # Geração de relatórios
 │       └── generator.py    # ReportGenerator
-├── evaluate.py             # Script principal
-├── evaluate_py.py          # Script legado (mantido para compatibilidade)
+├── evaluate_batch.py       # Avaliação em lote (múltiplos LLMs)
+├── evaluate.py             # Avaliação individual (um LLM)
 ├── requirements.txt        # Dependências do projeto
 └── benchmark_perguntas_unificado.json  # Dataset de perguntas
 ```
@@ -85,7 +85,66 @@ O dataset deve estar em formato JSON com a seguinte estrutura:
 
 ## 💻 Uso
 
-### Comando Básico
+O HealthBench-BR oferece duas ferramentas de avaliação:
+
+### 🔄 Avaliação em Lote (Recomendado)
+
+Para avaliar múltiplos LLMs simultaneamente usando configuração centralizada:
+
+```bash
+python evaluate_batch.py [opções]
+```
+
+#### Parâmetros do Batch
+- `--config`: Arquivo de configuração (padrão: `providers.json`)
+- `--dataset`: Dataset a usar (padrão: `benchmark_perguntas_unificado.json`)  
+- `--providers`: Lista de providers específicos para avaliar
+- `--limit`: Limitar número de perguntas por provider
+- `--output-dir`: Diretório de saída (padrão: `evaluation_results`)
+- `--no-progress`: Desabilitar barras de progresso
+
+#### Exemplos de Avaliação em Lote
+
+**Avaliar todos os providers ativos:**
+```bash
+python evaluate_batch.py
+```
+
+**Avaliar providers específicos:**
+```bash
+python evaluate_batch.py --providers "MedGemma-27B-Q8" "Claude-Sonnet-4-Bedrock"
+```
+
+**Com limite de perguntas:**
+```bash
+python evaluate_batch.py --limit 50 --output-dir my_results
+```
+
+**Pré-requisito**: Configure o arquivo `providers.json` com os LLMs desejados. Exemplo:
+```json
+{
+  "providers": [
+    {
+      "name": "Claude-Sonnet-4-Bedrock",
+      "type": "aws_bedrock", 
+      "model": "global.anthropic.claude-sonnet-4-20250514-v1:0",
+      "region": "us-east-1",
+      "aws_bearer_token": "${AWS_BEARER_TOKEN_BEDROCK}",
+      "temperature": 0.0,
+      "max_tokens": 12000,
+      "active": true
+    }
+  ],
+  "default_settings": {
+    "parallelism": 10,
+    "timeout": 120
+  }
+}
+```
+
+### 🎯 Avaliação Individual
+
+Para avaliar um único LLM por vez:
 
 ```bash
 python evaluate.py --provider PROVIDER --model MODEL [opções]
