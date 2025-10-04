@@ -122,7 +122,7 @@ class ConfigLoader:
             # Store any extra parameters
             known_keys = {
                 'name', 'type', 'model', 'api_key', 'base_url', 
-                'region', 'aws_bearer_token', 'temperature', 'max_tokens', 'timeout'
+                'region', 'aws_bearer_token', 'temperature', 'max_tokens', 'timeout', 'active'
             }
             for key, value in provider_data.items():
                 if key not in known_keys:

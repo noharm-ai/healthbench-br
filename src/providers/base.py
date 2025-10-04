@@ -47,9 +47,19 @@ class BaseLLMProvider(ABC):
     
     async def ainvoke(self, system_prompt: str, user_prompt: str) -> str:
         """Async invoke the LLM with given prompts"""
+        import logging
+        logger = logging.getLogger(__name__)
+
         messages = self.create_messages(system_prompt, user_prompt)
-        response = await self.llm.ainvoke(messages)
-        return response.content.strip() if hasattr(response, 'content') else str(response).strip()
+        
+        try:
+            response = await self.llm.ainvoke(messages)
+            result = response.content.strip() if hasattr(response, 'content') else str(response).strip()
+            return result
+        except Exception as e:
+            logger.error(f"❌ BaseLLMProvider.ainvoke failed: {str(e)}")
+            logger.error(f"❌ Exception type: {type(e).__name__}")
+            raise
     
     def invoke(self, system_prompt: str, user_prompt: str) -> str:
         """Sync invoke the LLM with given prompts"""

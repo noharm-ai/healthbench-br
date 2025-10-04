@@ -51,6 +51,7 @@ def get_provider(args):
             aws_access_key_id=args.aws_access_key_id,
             aws_secret_access_key=args.aws_secret_access_key,
             aws_session_token=args.aws_session_token,
+            aws_bearer_token=args.aws_bearer_token,
             region_name=args.aws_region
         )
     else:
@@ -85,6 +86,7 @@ async def main():
     parser.add_argument("--aws_access_key_id", help="AWS Access Key ID (para Bedrock)")
     parser.add_argument("--aws_secret_access_key", help="AWS Secret Access Key (para Bedrock)")
     parser.add_argument("--aws_session_token", help="AWS Session Token (para Bedrock, opcional)")
+    parser.add_argument("--aws_bearer_token", help="AWS Bearer Token (para Bedrock, opcional)")
     parser.add_argument("--aws_region", default="us-east-1", help="AWS Region (para Bedrock)")
     
     # Dataset and evaluation

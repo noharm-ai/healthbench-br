@@ -17,7 +17,7 @@
       "base_url": "http://localhost:11434",
       "temperature": 0.0,
       "max_tokens": 12000,
-      "active": false
+      "active": true
     },
     {
       "name": "Claude-Sonnet-4-Bedrock",
@@ -34,7 +34,7 @@
       "type": "maritaca",
       "model": "sabiazinho-3",
       "api_key": "${MARITACA_API_KEY}",
-      "base_url": "https://chat.maritaca.ai",
+      "base_url": "https://chat.maritaca.ai/api",
       "temperature": 0.0,
       "max_tokens": 12000,
       "active": true

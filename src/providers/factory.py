@@ -8,27 +8,11 @@ from .ollama import OllamaProvider
 from .bedrock import BedrockProvider
 
 
-class ProviderConfigItem:
-    """Temporary stub for ProviderConfigItem to avoid circular imports"""
-    def __init__(self):
-        self.name = ""
-        self.type = ""
-        self.model = ""
-        self.api_key = None
-        self.base_url = None
-        self.region = "us-east-1"
-        self.aws_bearer_token = None
-        self.temperature = 0.0
-        self.max_tokens = 12000
-        self.timeout = 120
-        self.extra_params = {}
-
-
 class ProviderFactory:
     """Factory for creating LLM provider instances"""
     
     @staticmethod
-    def create_from_config(provider_config: ProviderConfigItem) -> BaseLLMProvider:
+    def create_from_config(provider_config) -> BaseLLMProvider:
         """Create a provider instance from configuration"""
         
         # Create base provider config
