@@ -7,33 +7,37 @@
       "api_key": "${OPENAI_API_KEY}",
       "base_url": "https://api.openai.com/v1",
       "temperature": 0.0,
-      "max_tokens": 12000
+      "max_tokens": 12000,
+      "active": false
     },
     {
-      "name": "Llama3.2-Local",
+      "name": "MedGemma-27B-Q8",
       "type": "ollama",
-      "model": "llama3.2",
+      "model": "jwang580/medgemma_27b_q8_0:latest",
       "base_url": "http://localhost:11434",
       "temperature": 0.0,
-      "max_tokens": 12000
+      "max_tokens": 12000,
+      "active": false
     },
     {
-      "name": "Claude-Haiku-Bedrock",
+      "name": "Claude-Sonnet-4-Bedrock",
       "type": "aws_bedrock",
-      "model": "anthropic.claude-3-haiku-20240307-v1:0",
+      "model": "global.anthropic.claude-sonnet-4-20250514-v1:0",
       "region": "us-east-1",
       "aws_bearer_token": "${AWS_BEARER_TOKEN_BEDROCK}",
       "temperature": 0.0,
-      "max_tokens": 12000
+      "max_tokens": 12000,
+      "active": true
     },
     {
-      "name": "Maritaca-Large",
+      "name": "Maritaca-Sabiazinho-3",
       "type": "maritaca",
-      "model": "sabia-3-large",
+      "model": "sabiazinho-3",
       "api_key": "${MARITACA_API_KEY}",
       "base_url": "https://chat.maritaca.ai",
       "temperature": 0.0,
-      "max_tokens": 12000
+      "max_tokens": 12000,
+      "active": true
     }
   ],
   "default_settings": {

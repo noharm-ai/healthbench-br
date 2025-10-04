@@ -99,6 +99,7 @@ async def main():
     # Output
     parser.add_argument("--csv_out", default="resultados_avaliacao.csv", help="Arquivo CSV de saída")
     parser.add_argument("--detailed_report", action="store_true", help="Gerar relatório detalhado JSON")
+    parser.add_argument("--html_report", action="store_true", help="Gerar relatório HTML")
     parser.add_argument("--no_progress", action="store_true", help="Desabilitar barra de progresso")
     
     args = parser.parse_args()
@@ -144,6 +145,10 @@ async def main():
         # Save detailed report if requested
         if args.detailed_report:
             report_gen.save_detailed_report()
+        
+        # Save HTML report if requested
+        if args.html_report:
+            report_gen.save_html_report(model_name=args.model)
         
         # Print summary
         report_gen.print_summary(model_name=args.model)
