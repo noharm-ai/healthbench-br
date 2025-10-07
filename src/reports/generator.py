@@ -2,7 +2,7 @@
 
 import csv
 import os
-from typing import List, Dict, Any
+from typing import List, Dict, Any, Optional
 from dataclasses import dataclass, asdict
 from datetime import datetime
 import json
@@ -16,7 +16,7 @@ class EvaluationResult:
     idx_local: int
     pergunta: str
     esperado: str
-    pred: str
+    pred: Optional[str]
     correta: bool
     resposta_bruta: str
     

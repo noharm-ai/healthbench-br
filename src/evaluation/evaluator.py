@@ -51,25 +51,29 @@ class Evaluator:
     async def evaluate_batch(self, items: List[QAItem], show_progress: bool = True) -> List[EvaluationResult]:
         """Evaluate a batch of questions in parallel"""
         results = []
-        
+
+        # Single progress bar for all items
+        progress_bar = tqdm(total=len(items), desc="Evaluating: 0/0 (0.0%)") if show_progress else None
+
         # Process in chunks based on parallelism
         for i in range(0, len(items), self.parallelism):
             batch = items[i:i + self.parallelism]
-            
-            if show_progress:
-                tasks = [self.evaluate_single(item) for item in batch]
-                batch_results = await tqdm.gather(*tasks, desc=f"Batch {i//self.parallelism + 1}")
-            else:
-                tasks = [self.evaluate_single(item) for item in batch]
-                batch_results = await asyncio.gather(*tasks)
-            
+
+            tasks = [self.evaluate_single(item) for item in batch]
+            batch_results = await asyncio.gather(*tasks)
+
             results.extend(batch_results)
-            
-            # Print partial accuracy
-            correct = sum(1 for r in results if r.correta)
-            total = len(results)
-            print(f"Acurácia parcial: {correct}/{total} = {correct/total:.3f}")
-        
+
+            if progress_bar:
+                correct = sum(1 for r in results if r.correta)
+                total = len(results)
+                accuracy = (correct / total * 100) if total > 0 else 0
+                progress_bar.set_description(f"Evaluating: {correct}/{total} ({accuracy:.1f}%)")
+                progress_bar.update(len(batch))
+
+        if progress_bar:
+            progress_bar.close()
+
         return results
     
     async def evaluate(self, items: List[QAItem], limit: Optional[int] = None, 

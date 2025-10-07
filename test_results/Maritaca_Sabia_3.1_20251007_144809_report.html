@@ -1,0 +1,1836 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Relatório de Avaliação - HealthBench BR</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 10px;
+            text-align: center;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 2.5em;
+            font-weight: 300;
+        }
+        .header p {
+            margin: 10px 0 0 0;
+            opacity: 0.9;
+            font-size: 1.1em;
+        }
+        .summary {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .summary h2 {
+            color: #667eea;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 10px;
+            margin-top: 0;
+        }
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+        .metric-card {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            border-left: 4px solid #667eea;
+        }
+        .metric-value {
+            font-size: 2em;
+            font-weight: bold;
+            color: #667eea;
+            margin: 0;
+        }
+        .metric-label {
+            color: #666;
+            font-size: 0.9em;
+            margin: 5px 0 0 0;
+        }
+        .accuracy-bar {
+            width: 100%;
+            height: 20px;
+            background: #e0e0e0;
+            border-radius: 10px;
+            margin: 10px 0;
+            overflow: hidden;
+        }
+        .accuracy-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            border-radius: 10px;
+            transition: width 0.5s ease;
+        }
+        .breakdown {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .breakdown h2 {
+            color: #667eea;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 10px;
+            margin-top: 0;
+        }
+        .breakdown-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        .breakdown-table th,
+        .breakdown-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        .breakdown-table th {
+            background: #f8f9fa;
+            font-weight: 600;
+            color: #667eea;
+        }
+        .breakdown-table tr:hover {
+            background: #f8f9fa;
+        }
+        .results {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .results h2 {
+            color: #667eea;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 10px;
+            margin-top: 0;
+        }
+        .result-item {
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            margin: 15px 0;
+            padding: 20px;
+            background: #fafafa;
+        }
+        .result-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        .result-title {
+            font-weight: bold;
+            color: #333;
+        }
+        .result-status {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8em;
+            font-weight: bold;
+        }
+        .status-correct {
+            background: #d4edda;
+            color: #155724;
+        }
+        .status-incorrect {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        .result-content {
+            margin: 10px 0;
+        }
+        .result-label {
+            font-weight: bold;
+            color: #555;
+            margin-top: 15px;
+        }
+        .result-text {
+            margin: 5px 0;
+            padding: 10px;
+            background: white;
+            border-radius: 4px;
+            border-left: 3px solid #667eea;
+        }
+        @media (max-width: 768px) {
+            .metrics-grid {
+                grid-template-columns: 1fr;
+            }
+            .result-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>HealthBench BR - Relatório de Avaliação</h1>
+        <p>Avaliação de Modelos de Linguagem para Questões Médicas em Português</p>
+    </div>
+
+    <div class="summary">
+        <h2>Resumo Geral</h2>
+        <div class="metrics-grid">
+            <div class="metric-card">
+                <div class="metric-value">1000</div>
+                <div class="metric-label">Total de Perguntas</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-value">668</div>
+                <div class="metric-label">Acertos</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-value">332</div>
+                <div class="metric-label">Erros</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-value">66.80%</div>
+                <div class="metric-label">Acurácia</div>
+            </div>
+        </div>
+        
+        <div class="accuracy-bar">
+            <div class="accuracy-fill" style="width: 66.8%"></div>
+        </div>
+        
+        <p><strong>Modelo:</strong> sabia-3.1</p>
+        <p><strong>Data da Avaliação:</strong> 2025-10-07 14:48:09</p>
+        <p><strong>Respostas sem conteúdo:</strong> 0</p>
+    </div>
+
+    <div class="breakdown">
+        <h2>Desempenho por Arquivo</h2>
+        <table class="breakdown-table">
+            <thead>
+                <tr>
+                    <th>Arquivo</th>
+                    <th>Total</th>
+                    <th>Acertos</th>
+                    <th>Acurácia</th>
+                </tr>
+            </thead>
+            <tbody>
+
+                <tr>
+                    <td>V_PCDT_-_Vasculite__-_Atualizado.pdf</td>
+                    <td>10</td>
+                    <td>8</td>
+                    <td>80.00%</td>
+                </tr>
+
+                <tr>
+                    <td>P_Porfirias.pdf</td>
+                    <td>10</td>
+                    <td>5</td>
+                    <td>50.00%</td>
+                </tr>
+
+                <tr>
+                    <td>R_Rastreamento_-_Câncer_do_Colo_do_Útero.pdf</td>
+                    <td>10</td>
+                    <td>7</td>
+                    <td>70.00%</td>
+                </tr>
+
+                <tr>
+                    <td>A_PCDT_Escorpionismo.pdf</td>
+                    <td>10</td>
+                    <td>7</td>
+                    <td>70.00%</td>
+                </tr>
+
+                <tr>
+                    <td>D_Diabete_Insípido.pdf</td>
+                    <td>10</td>
+                    <td>7</td>
+                    <td>70.00%</td>
+                </tr>
+
+                <tr>
+                    <td>D_Doença_de_parkinson.pdf</td>
+                    <td>10</td>
+                    <td>5</td>
+                    <td>50.00%</td>
+                </tr>
+
+                <tr>
+                    <td>M_Mucopolissacaridose_do_Tipo_II.pdf</td>
+                    <td>10</td>
+                    <td>8</td>
+                    <td>80.00%</td>
+                </tr>
+
+                <tr>
+                    <td>S_Síndrome_de_turner.pdf</td>
+                    <td>10</td>
+                    <td>6</td>
+                    <td>60.00%</td>
+                </tr>
+
+                <tr>
+                    <td>A_Amiloidoses_Associadas_a_Transtirretina.pdf</td>
+                    <td>10</td>
+                    <td>7</td>
+                    <td>70.00%</td>
+                </tr>
+
+                <tr>
+                    <td>H_Hipertensão_Arterial_Sistêmica.pdf</td>
+                    <td>10</td>
+                    <td>9</td>
+                    <td>90.00%</td>
+                </tr>
+
+                <tr>
+                    <td>E_Epilepsia_-_PCDT.pdf</td>
+                    <td>10</td>
+                    <td>8</td>
+                    <td>80.00%</td>
+                </tr>
+
+                <tr>
+                    <td>M_Miopatias_Inflamatórias.pdf</td>
+                    <td>10</td>
+                    <td>6</td>
+                    <td>60.00%</td>
+                </tr>
+
+                <tr>
+                    <td>D_Doença_de_Gaucher.pdf</td>
+                    <td>10</td>
+                    <td>6</td>
+                    <td>60.00%</td>
+                </tr>
+
+                <tr>
+                    <td>D_Doença_Celíaca.pdf</td>
+                    <td>10</td>
+                    <td>6</td>
+                    <td>60.00%</td>
+                </tr>
+
+                <tr>
+                    <td>A_Artrite_Psoríaca.pdf</td>
+                    <td>10</td>
+                    <td>6</td>
+                    <td>60.00%</td>
+                </tr>
+
+                <tr>
+                    <td>A_Artrite_Reumatóide_e_Artrite_Idiopática_-_Juvenil_Portaria_Conjunta_n_16.pdf</td>
+                    <td>10</td>
+                    <td>9</td>
+                    <td>90.00%</td>
+                </tr>
+
+                <tr>
+                    <td>D_Doenca_de_Crohn.pdf</td>
+                    <td>10</td>
+                    <td>5</td>
+                    <td>50.00%</td>
+                </tr>
+
+                <tr>
+                    <td>E_Esclerose_Múltipla.pdf</td>
+                    <td>10</td>
+                    <td>9</td>
+                    <td>90.00%</td>
+                </tr>
+
+                <tr>
+                    <td>E_Espondilite_Ancilosante.pdf</td>
+                    <td>10</td>
+                    <td>7</td>
+                    <td>70.00%</td>
+                </tr>
+
+                <tr>
+                    <td>H_Hidradenite_Supurativa.pdf</td>
+                    <td>10</td>
+                    <td>7</td>
+                    <td>70.00%</td>
+                </tr>
+
+                <tr>
+                    <td>P_Psoríase.pdf</td>
+                    <td>10</td>
+                    <td>10</td>
+                    <td>100.00%</td>
+                </tr>
+
+                <tr>
+                    <td>R_Retocolite_Ulcerativa.pdf</td>
+                    <td>10</td>
+                    <td>7</td>
+                    <td>70.00%</td>
+                </tr>
+
+                <tr>
+                    <td>U_Uveites_Não_Infecciosas.pdf</td>
+                    <td>10</td>
+                    <td>5</td>
+                    <td>50.00%</td>
+                </tr>
+
+                <tr>
+                    <td>A_Anemia_Hemolítica_Autoimune_Portaria_Conjunta_n_7_-_2025.pdf</td>
+                    <td>10</td>
+                    <td>6</td>
+                    <td>60.00%</td>
+                </tr>
+
+                <tr>
+                    <td>M_Mucopolissacaridose_do_tipo_I.pdf</td>
+                    <td>10</td>
+                    <td>4</td>
+                    <td>40.00%</td>
+                </tr>
+
+                <tr>
+                    <td>B_PCDT_-_Brucelose_Humana.pdf</td>
+                    <td>10</td>
+                    <td>7</td>
+                    <td>70.00%</td>
+                </tr>
+
+                <tr>
+                    <td>A_Atrofia_Muscular_Espinhal_5q_tipos_1_e_2.pdf</td>
+                    <td>10</td>
+                    <td>7</td>
+                    <td>70.00%</td>
+                </tr>
+
+                <tr>
+                    <td>P_Profilaxia_Pós-Exposição_de_Risco_(PEP)_à_Infecção_pelo_HIV.pdf</td>
+                    <td>10</td>
+                    <td>8</td>
+                    <td>80.00%</td>
+                </tr>
+
+                <tr>
+                    <td>E_Estratégias_para_Atenuar_a_Progressão_da_Doença_Renal_Crônica_(PCDT).pdf</td>
+                    <td>10</td>
+                    <td>8</td>
+                    <td>80.00%</td>
+                </tr>
+
+                <tr>
+                    <td>P_Profilaxia_Pré-Exposição_(PrEP)_de_Risco_à_Infecção_pelo_HIV.pdf</td>
+                    <td>10</td>
+                    <td>5</td>
+                    <td>50.00%</td>
+                </tr>
+
+                <tr>
+                    <td>D_PCDT_-_Doença_de_Fabry.pdf</td>
+                    <td>10</td>
+                    <td>7</td>
+                    <td>70.00%</td>
+                </tr>
+
+                <tr>
+                    <td>C_Câncere_de_Mama.pdf</td>
+                    <td>10</td>
+                    <td>7</td>
+                    <td>70.00%</td>
+                </tr>
+
+                <tr>
+                    <td>D_Doença_Falciforme.pdf</td>
+                    <td>10</td>
+                    <td>6</td>
+                    <td>60.00%</td>
+                </tr>
+
+                <tr>
+                    <td>I_Insuficiência_Cardíaca_com_Fração_de_Ejeção_Reduzid.pdf</td>
+                    <td>10</td>
+                    <td>6</td>
+                    <td>60.00%</td>
+                </tr>
+
+                <tr>
+                    <td>D_Doença_de_Wilson.pdf</td>
+                    <td>10</td>
+                    <td>6</td>
+                    <td>60.00%</td>
+                </tr>
+
+                <tr>
+                    <td>I_Indução_de_Imunotolerância_para_Indivíduos_com_Hemofilia_A_e_Inibidor_(Protocolo_de_Uso).pdf</td>
+                    <td>10</td>
+                    <td>7</td>
+                    <td>70.00%</td>
+                </tr>
+
+                <tr>
+                    <td>H_Hemofilia_A_–_Uso_do_Emicizumabe.pdf</td>
+                    <td>10</td>
+                    <td>6</td>
+                    <td>60.00%</td>
+                </tr>
+
+                <tr>
+                    <td>H_Hipertensão_Pulmonar.pdf</td>
+                    <td>10</td>
+                    <td>4</td>
+                    <td>40.00%</td>
+                </tr>
+
+                <tr>
+                    <td>H_Hepatite_Autoimune.pdf</td>
+                    <td>10</td>
+                    <td>6</td>
+                    <td>60.00%</td>
+                </tr>
+
+                <tr>
+                    <td>F_Fibrose_Cística.pdf</td>
+                    <td>10</td>
+                    <td>6</td>
+                    <td>60.00%</td>
+                </tr>
+
+                <tr>
+                    <td>D_Diabete_Melito_Tipo_2.pdf</td>
+                    <td>10</td>
+                    <td>7</td>
+                    <td>70.00%</td>
+                </tr>
+
+                <tr>
+                    <td>M_Manejo_da_Infecção_pelo_HIV_em_Crianças_e_Adolescentes_-_Módulo_1.pdf</td>
+                    <td>10</td>
+                    <td>6</td>
+                    <td>60.00%</td>
+                </tr>
+
+                <tr>
+                    <td>M_Manejo_da_Infecção_pelo_HIV_em_Crianças_e_Adolescentes_-_Módulo_2.pdf</td>
+                    <td>10</td>
+                    <td>5</td>
+                    <td>50.00%</td>
+                </tr>
+
+                <tr>
+                    <td>A_Asma_-_Portaria_Conjunta_SAES-SECTICS_n_32.pdf</td>
+                    <td>10</td>
+                    <td>7</td>
+                    <td>70.00%</td>
+                </tr>
+
+                <tr>
+                    <td>B_PCDT_-_Blinatumomabe.pdf</td>
+                    <td>10</td>
+                    <td>7</td>
+                    <td>70.00%</td>
+                </tr>
+
+                <tr>
+                    <td>D_Dermatite_Atópica.pdf</td>
+                    <td>10</td>
+                    <td>5</td>
+                    <td>50.00%</td>
+                </tr>
+
+                <tr>
+                    <td>A_Acidente_Vascular_Cerebral_Isquêmico_Agudo_-_Portaria_Conjunta_SAES-SECTICS_n_29.pdf</td>
+                    <td>10</td>
+                    <td>8</td>
+                    <td>80.00%</td>
+                </tr>
+
+                <tr>
+                    <td>D_Distrator_Osteogênico_Mandibular_(DOM).pdf</td>
+                    <td>10</td>
+                    <td>7</td>
+                    <td>70.00%</td>
+                </tr>
+
+                <tr>
+                    <td>G_Glaucoma.pdf</td>
+                    <td>10</td>
+                    <td>7</td>
+                    <td>70.00%</td>
+                </tr>
+
+                <tr>
+                    <td>M_Mieloma_Múltiplo.pdf</td>
+                    <td>10</td>
+                    <td>6</td>
+                    <td>60.00%</td>
+                </tr>
+
+                <tr>
+                    <td>O_Osteoporose.pdf</td>
+                    <td>10</td>
+                    <td>6</td>
+                    <td>60.00%</td>
+                </tr>
+
+                <tr>
+                    <td>M_Manejo_da_Infecção_pelo_HIV_em_Adultos_-_Módulo_2.pdf</td>
+                    <td>10</td>
+                    <td>5</td>
+                    <td>50.00%</td>
+                </tr>
+
+                <tr>
+                    <td>M_Manejo_da_Infecção_pelo_HIV_em_Adultos_-_Módulo_1.pdf</td>
+                    <td>10</td>
+                    <td>7</td>
+                    <td>70.00%</td>
+                </tr>
+
+                <tr>
+                    <td>L_Lipofuscinose_Ceroide_Neuronal_tipo_2.pdf</td>
+                    <td>10</td>
+                    <td>9</td>
+                    <td>90.00%</td>
+                </tr>
+
+                <tr>
+                    <td>H_Hepatite_B_e_coinfecções.pdf</td>
+                    <td>10</td>
+                    <td>6</td>
+                    <td>60.00%</td>
+                </tr>
+
+                <tr>
+                    <td>D_Diabete_Melito_Tipo_1.pdf</td>
+                    <td>10</td>
+                    <td>7</td>
+                    <td>70.00%</td>
+                </tr>
+
+                <tr>
+                    <td>S_Síndrome_de_Falência_Medular.pdf</td>
+                    <td>10</td>
+                    <td>6</td>
+                    <td>60.00%</td>
+                </tr>
+
+                <tr>
+                    <td>H_Hanseníase.pdf</td>
+                    <td>10</td>
+                    <td>9</td>
+                    <td>90.00%</td>
+                </tr>
+
+                <tr>
+                    <td>D_Degeneração_Macular_Relacionada_com_a_Idade_-_Portaria_Conjunta_n__24.pdf</td>
+                    <td>10</td>
+                    <td>6</td>
+                    <td>60.00%</td>
+                </tr>
+
+                <tr>
+                    <td>D_Dislipidemia.pdf</td>
+                    <td>10</td>
+                    <td>9</td>
+                    <td>90.00%</td>
+                </tr>
+
+                <tr>
+                    <td>L_Lúpus_Eritematoso_Sistêmico.pdf</td>
+                    <td>10</td>
+                    <td>9</td>
+                    <td>90.00%</td>
+                </tr>
+
+                <tr>
+                    <td>M_Melanoma_Cutâneo.pdf</td>
+                    <td>10</td>
+                    <td>4</td>
+                    <td>40.00%</td>
+                </tr>
+
+                <tr>
+                    <td>C_Carcinoma_de_Células_Renais_-_DDT.pdf</td>
+                    <td>10</td>
+                    <td>8</td>
+                    <td>80.00%</td>
+                </tr>
+
+                <tr>
+                    <td>S_Síndrome_Mielodisplásica_de_Baixo_Risco.pdf</td>
+                    <td>10</td>
+                    <td>7</td>
+                    <td>70.00%</td>
+                </tr>
+
+                <tr>
+                    <td>C_Carcinoma_Hepatocelular_no_Adulto_-_DDT.pdf</td>
+                    <td>10</td>
+                    <td>6</td>
+                    <td>60.00%</td>
+                </tr>
+
+                <tr>
+                    <td>E_Esclerose_Sistêmica.pdf</td>
+                    <td>10</td>
+                    <td>6</td>
+                    <td>60.00%</td>
+                </tr>
+
+                <tr>
+                    <td>O_Osteogênese_Imperfeita.pdf</td>
+                    <td>10</td>
+                    <td>5</td>
+                    <td>50.00%</td>
+                </tr>
+
+                <tr>
+                    <td>T_Transtorno_do_Déficit_de_Atenção_com_Hiperatividade_-_TDAH.pdf</td>
+                    <td>10</td>
+                    <td>9</td>
+                    <td>90.00%</td>
+                </tr>
+
+                <tr>
+                    <td>D_Distúrbio_Mineral_Ósseo_na_Doença_Renal_Crônica.pdf</td>
+                    <td>10</td>
+                    <td>5</td>
+                    <td>50.00%</td>
+                </tr>
+
+                <tr>
+                    <td>P_Puberdade_Precoce_Central.pdf</td>
+                    <td>10</td>
+                    <td>5</td>
+                    <td>50.00%</td>
+                </tr>
+
+                <tr>
+                    <td>I_Ictioses_Hereditárias.pdf</td>
+                    <td>10</td>
+                    <td>7</td>
+                    <td>70.00%</td>
+                </tr>
+
+                <tr>
+                    <td>M_Miastenia_Gravis.pdf</td>
+                    <td>10</td>
+                    <td>6</td>
+                    <td>60.00%</td>
+                </tr>
+
+                <tr>
+                    <td>L_Linha_de_Cuidado_do_Infarto_Agudo_do_Miocárdio_e_o_Protocolo_de_Síndromes_Coronarianas_Agudas.pdf</td>
+                    <td>10</td>
+                    <td>7</td>
+                    <td>70.00%</td>
+                </tr>
+
+                <tr>
+                    <td>C_Cirurgia_de_citorredução_e_hipertermoquimioterapia_em_caso_de_mesotelioma_peritoneal_maligno.pdf</td>
+                    <td>10</td>
+                    <td>6</td>
+                    <td>60.00%</td>
+                </tr>
+
+                <tr>
+                    <td>C_Cirurgia_de_citorredução_e_hipertermoquimioterapia_em_caso_de_pseudomixoma_peritoneal.pdf</td>
+                    <td>10</td>
+                    <td>6</td>
+                    <td>60.00%</td>
+                </tr>
+
+                <tr>
+                    <td>P_Profilaxia_primária_em_caso_de_Hemofilia_Grave.pdf</td>
+                    <td>10</td>
+                    <td>8</td>
+                    <td>80.00%</td>
+                </tr>
+
+                <tr>
+                    <td>C_Comportamento_Agressivo_no_Transtorno_do_Espectro_do_Autismo.pdf</td>
+                    <td>10</td>
+                    <td>7</td>
+                    <td>70.00%</td>
+                </tr>
+
+                <tr>
+                    <td>S_Síndrome_de_Guillain-Barré.pdf</td>
+                    <td>10</td>
+                    <td>8</td>
+                    <td>80.00%</td>
+                </tr>
+
+                <tr>
+                    <td>H_Hiperprolactinemia.pdf</td>
+                    <td>10</td>
+                    <td>7</td>
+                    <td>70.00%</td>
+                </tr>
+
+                <tr>
+                    <td>P_Púrpura_Trombocitopênica_Idiopática.pdf</td>
+                    <td>10</td>
+                    <td>7</td>
+                    <td>70.00%</td>
+                </tr>
+
+                <tr>
+                    <td>D_Doença_de_Paget.pdf</td>
+                    <td>10</td>
+                    <td>6</td>
+                    <td>60.00%</td>
+                </tr>
+
+                <tr>
+                    <td>I_Imunossupressão_no_Transplante_Cardíaco.pdf</td>
+                    <td>10</td>
+                    <td>6</td>
+                    <td>60.00%</td>
+                </tr>
+
+                <tr>
+                    <td>I_Imunossupressão_no_Transplante_Renal.pdf</td>
+                    <td>10</td>
+                    <td>4</td>
+                    <td>40.00%</td>
+                </tr>
+
+                <tr>
+                    <td>E_Espasticidade.pdf</td>
+                    <td>10</td>
+                    <td>7</td>
+                    <td>70.00%</td>
+                </tr>
+
+                <tr>
+                    <td>R_Raquitismo_e_Osteomalácia.pdf</td>
+                    <td>10</td>
+                    <td>7</td>
+                    <td>70.00%</td>
+                </tr>
+
+                <tr>
+                    <td>D_Doença_Pulmonar_Obstrutiva_Crônica.pdf</td>
+                    <td>10</td>
+                    <td>8</td>
+                    <td>80.00%</td>
+                </tr>
+
+                <tr>
+                    <td>L_Leucemia_Linfoblástica_Aguda_Ph+_de_Adulto_com_Mesilato_de_Imatinibe_(DDT).pdf</td>
+                    <td>10</td>
+                    <td>6</td>
+                    <td>60.00%</td>
+                </tr>
+
+                <tr>
+                    <td>L_Leucemia_Linfoblástica_Aguda_Cromossoma_Philadelphia_Positivo_de_Crianças_e_Adolescentes_(DDT).pdf</td>
+                    <td>10</td>
+                    <td>5</td>
+                    <td>50.00%</td>
+                </tr>
+
+                <tr>
+                    <td>L_Leucemia_Mieloide_Crônica_do_Adulto.pdf</td>
+                    <td>10</td>
+                    <td>5</td>
+                    <td>50.00%</td>
+                </tr>
+
+                <tr>
+                    <td>E_Epidermólise_Bolhosa_(Diretriz_Brasileira).pdf</td>
+                    <td>10</td>
+                    <td>7</td>
+                    <td>70.00%</td>
+                </tr>
+
+                <tr>
+                    <td>T_Tromboembolismo_Venoso_em_Gestantes_com_Trombofilia.pdf</td>
+                    <td>10</td>
+                    <td>6</td>
+                    <td>60.00%</td>
+                </tr>
+
+                <tr>
+                    <td>R_Retinopatia_Diabética.pdf</td>
+                    <td>10</td>
+                    <td>8</td>
+                    <td>80.00%</td>
+                </tr>
+
+                <tr>
+                    <td>L_Linfangioleiomiomatose.pdf</td>
+                    <td>10</td>
+                    <td>10</td>
+                    <td>100.00%</td>
+                </tr>
+
+                <tr>
+                    <td>A_Portaria_SAS_365_-_DRC.pdf</td>
+                    <td>10</td>
+                    <td>7</td>
+                    <td>70.00%</td>
+                </tr>
+
+                <tr>
+                    <td>E_Esquizofrenia.pdf</td>
+                    <td>10</td>
+                    <td>7</td>
+                    <td>70.00%</td>
+                </tr>
+
+                <tr>
+                    <td>L_Leucemia_Mieloide_Crônica_de_Criança_e_Adolescente.pdf</td>
+                    <td>10</td>
+                    <td>6</td>
+                    <td>60.00%</td>
+                </tr>
+
+                <tr>
+                    <td>I_Insuficiência_Adrenal.pdf</td>
+                    <td>10</td>
+                    <td>8</td>
+                    <td>80.00%</td>
+                </tr>
+
+                <tr>
+                    <td>T_Transtorno_Esquizoafetivo.pdf</td>
+                    <td>10</td>
+                    <td>7</td>
+                    <td>70.00%</td>
+                </tr>
+
+                <tr>
+                    <td>M_Mucopolissacaridose_do_Tipo_VII.pdf</td>
+                    <td>10</td>
+                    <td>6</td>
+                    <td>60.00%</td>
+                </tr>
+
+                <tr>
+                    <td>A_Atenção_Integral_às_Pessoas_com_Infecções_Sexualmente_Transmissíveis.pdf</td>
+                    <td>10</td>
+                    <td>8</td>
+                    <td>80.00%</td>
+                </tr>
+
+            </tbody>
+        </table>
+    </div>
+
+    <div class="breakdown">
+        <h2>Desempenho por Categoria</h2>
+        <table class="breakdown-table">
+            <thead>
+                <tr>
+                    <th>Categoria</th>
+                    <th>Total</th>
+                    <th>Acertos</th>
+                    <th>Acurácia</th>
+                </tr>
+            </thead>
+            <tbody>
+
+                <tr>
+                    <td>Protocolo clínico e diretrizes terapêuticas da vasculite associada aos anticorpos anti-citoplasma de neutrófilos</td>
+                    <td>10</td>
+                    <td>8</td>
+                    <td>80.00%</td>
+                </tr>
+
+                <tr>
+                    <td>Protocolo clínico e diretrizes terapêuticas das porfirias</td>
+                    <td>10</td>
+                    <td>5</td>
+                    <td>50.00%</td>
+                </tr>
+
+                <tr>
+                    <td>Diretrizes brasileiras para o rastreamento do câncer de colo do útero: Parte I - Rastreamento organizado utilizando testes moleculares para detecção de DNA-HPV oncogênico</td>
+                    <td>10</td>
+                    <td>7</td>
+                    <td>70.00%</td>
+                </tr>
+
+                <tr>
+                    <td>Acidentes escorpiônicos</td>
+                    <td>10</td>
+                    <td>7</td>
+                    <td>70.00%</td>
+                </tr>
+
+                <tr>
+                    <td>Protocolo clínico e diretrizes terapêuticas do diabete insípido</td>
+                    <td>10</td>
+                    <td>7</td>
+                    <td>70.00%</td>
+                </tr>
+
+                <tr>
+                    <td>Protocolo Clínico e Diretrizes Terapêuticas da Doença de Parkinson</td>
+                    <td>10</td>
+                    <td>5</td>
+                    <td>50.00%</td>
+                </tr>
+
+                <tr>
+                    <td>Protocolo clínico e diretrizes terapêuticas da mucopolissacaridose do tipo II</td>
+                    <td>10</td>
+                    <td>8</td>
+                    <td>80.00%</td>
+                </tr>
+
+                <tr>
+                    <td>Protocolo clínico e diretrizes terapêuticas da síndrome de Turner</td>
+                    <td>10</td>
+                    <td>6</td>
+                    <td>60.00%</td>
+                </tr>
+
+                <tr>
+                    <td>Protocolo clínico e diretrizes terapêuticas das amiloidoses associadas à transtirretina</td>
+                    <td>10</td>
+                    <td>7</td>
+                    <td>70.00%</td>
+                </tr>
+
+                <tr>
+                    <td>Protocolo clínico e diretrizes terapêuticas da hipertensão arterial sistêmica</td>
+                    <td>10</td>
+                    <td>9</td>
+                    <td>90.00%</td>
+                </tr>
+
+                <tr>
+                    <td>Protocolo clínico e diretrizes terapêuticas da epilepsia</td>
+                    <td>10</td>
+                    <td>8</td>
+                    <td>80.00%</td>
+                </tr>
+
+                <tr>
+                    <td>Protocolo clínico e diretrizes terapêuticas de miopatias inflamatórias</td>
+                    <td>10</td>
+                    <td>6</td>
+                    <td>60.00%</td>
+                </tr>
+
+                <tr>
+                    <td>Protocolo clínico e diretrizes terapêuticas da doença de Gaucher</td>
+                    <td>10</td>
+                    <td>6</td>
+                    <td>60.00%</td>
+                </tr>
+
+                <tr>
+                    <td>Protocolo clínico e diretrizes terapêuticas da doença celíaca</td>
+                    <td>10</td>
+                    <td>6</td>
+                    <td>60.00%</td>
+                </tr>
+
+                <tr>
+                    <td>Protocolo clínico e diretrizes terapêuticas - Artrite psoríaca</td>
+                    <td>10</td>
+                    <td>6</td>
+                    <td>60.00%</td>
+                </tr>
+
+                <tr>
+                    <td>Protocolo clínico e diretrizes terapêuticas da artrite reumatoide e da artrite idiopática juvenil</td>
+                    <td>10</td>
+                    <td>9</td>
+                    <td>90.00%</td>
+                </tr>
+
+                <tr>
+                    <td>Protocolo clínico e diretrizes terapêuticas da doença de Crohn</td>
+                    <td>10</td>
+                    <td>5</td>
+                    <td>50.00%</td>
+                </tr>
+
+                <tr>
+                    <td>Protocolo clínico e diretrizes terapêuticas da esclerose múltipla</td>
+                    <td>10</td>
+                    <td>9</td>
+                    <td>90.00%</td>
+                </tr>
+
+                <tr>
+                    <td>Protocolo clínico e diretrizes terapêuticas da espondilite ancilosante</td>
+                    <td>10</td>
+                    <td>7</td>
+                    <td>70.00%</td>
+                </tr>
+
+                <tr>
+                    <td>Protocolo clínico e diretrizes terapêuticas da hidradenite supurativa</td>
+                    <td>10</td>
+                    <td>7</td>
+                    <td>70.00%</td>
+                </tr>
+
+                <tr>
+                    <td>Protocolo clínico e diretrizes terapêuticas - Psoríase</td>
+                    <td>10</td>
+                    <td>10</td>
+                    <td>100.00%</td>
+                </tr>
+
+                <tr>
+                    <td>Protocolo clínico e diretrizes terapêuticas de retocolite ulcerativa</td>
+                    <td>10</td>
+                    <td>7</td>
+                    <td>70.00%</td>
+                </tr>
+
+                <tr>
+                    <td>Protocolo clínico e diretrizes terapêuticas das uveítes não infecciosas</td>
+                    <td>10</td>
+                    <td>5</td>
+                    <td>50.00%</td>
+                </tr>
+
+                <tr>
+                    <td>Protocolo clínico e diretrizes terapêuticas - Anemia hemolítica autoimune</td>
+                    <td>10</td>
+                    <td>6</td>
+                    <td>60.00%</td>
+                </tr>
+
+                <tr>
+                    <td>Mucopolissacaridose do tipo I</td>
+                    <td>10</td>
+                    <td>4</td>
+                    <td>40.00%</td>
+                </tr>
+
+                <tr>
+                    <td>Protocolo clínico e diretrizes terapêuticas da brucelose humana</td>
+                    <td>10</td>
+                    <td>7</td>
+                    <td>70.00%</td>
+                </tr>
+
+                <tr>
+                    <td>Protocolo clínico e diretrizes terapêuticas da atrofia muscular espinhal 5q tipos 1 e 2</td>
+                    <td>10</td>
+                    <td>7</td>
+                    <td>70.00%</td>
+                </tr>
+
+                <tr>
+                    <td>Protocolo clínico e diretrizes terapêuticas para profilaxia pós-exposição de risco (pep) à infecção pelo hiv, ist e hepatites virais</td>
+                    <td>10</td>
+                    <td>8</td>
+                    <td>80.00%</td>
+                </tr>
+
+                <tr>
+                    <td>Estratégias para atenuar a progressão da doença renal crônica</td>
+                    <td>10</td>
+                    <td>8</td>
+                    <td>80.00%</td>
+                </tr>
+
+                <tr>
+                    <td>Protocolo clínico e diretrizes terapêuticas para profilaxia pré-exposição (prep) oral à infecção pelo hiv</td>
+                    <td>10</td>
+                    <td>5</td>
+                    <td>50.00%</td>
+                </tr>
+
+                <tr>
+                    <td>Protocolo clínico e diretrizes terapêuticas da doença de Fabry</td>
+                    <td>10</td>
+                    <td>7</td>
+                    <td>70.00%</td>
+                </tr>
+
+                <tr>
+                    <td>Protocolo clínico e diretrizes terapêuticas câncer de mama</td>
+                    <td>10</td>
+                    <td>7</td>
+                    <td>70.00%</td>
+                </tr>
+
+                <tr>
+                    <td>Protocolo clínico e diretrizes terapêuticas da doença falciforme</td>
+                    <td>10</td>
+                    <td>6</td>
+                    <td>60.00%</td>
+                </tr>
+
+                <tr>
+                    <td>Protocolo clínico e diretrizes terapêuticas da insuficiência cardíaca com fração de ejeção reduzida</td>
+                    <td>10</td>
+                    <td>6</td>
+                    <td>60.00%</td>
+                </tr>
+
+                <tr>
+                    <td>Protocolo Clínico e Diretrizes Terapêuticas da Doença de Wilson</td>
+                    <td>10</td>
+                    <td>6</td>
+                    <td>60.00%</td>
+                </tr>
+
+                <tr>
+                    <td>Protocolo de uso de fator VIII da coagulação na imunotolerância para indivíduos com hemofilia A e inibidor do fator VIII da coagulação sanguínea</td>
+                    <td>10</td>
+                    <td>7</td>
+                    <td>70.00%</td>
+                </tr>
+
+                <tr>
+                    <td>Protocolo de uso de emicizumabe para tratamento de indivíduos com hemofilia A moderada e grave e inibidores do fator VIII da coagulação sanguínea</td>
+                    <td>10</td>
+                    <td>6</td>
+                    <td>60.00%</td>
+                </tr>
+
+                <tr>
+                    <td>Protocolo clínico e diretrizes terapêuticas da hipertensão pulmonar</td>
+                    <td>10</td>
+                    <td>4</td>
+                    <td>40.00%</td>
+                </tr>
+
+                <tr>
+                    <td>Protocolo clínico e diretrizes terapêuticas hepatite autoimune</td>
+                    <td>10</td>
+                    <td>6</td>
+                    <td>60.00%</td>
+                </tr>
+
+                <tr>
+                    <td>Protocolo clínico e diretrizes terapêuticas da fibrose cística</td>
+                    <td>10</td>
+                    <td>6</td>
+                    <td>60.00%</td>
+                </tr>
+
+                <tr>
+                    <td>Protocolo clínico e diretrizes terapêuticas diabete melito tipo 2</td>
+                    <td>10</td>
+                    <td>7</td>
+                    <td>70.00%</td>
+                </tr>
+
+                <tr>
+                    <td>Protocolo Clínico e Diretrizes Terapêuticas para Manejo da Infecção pelo HIV em Crianças e Adolescentes - Módulo 1 - Diagnóstico, Manejo e Acompanhamento de Crianças Expostas ao HIV</td>
+                    <td>10</td>
+                    <td>6</td>
+                    <td>60.00%</td>
+                </tr>
+
+                <tr>
+                    <td>Protocolo clínico e diretrizes terapêuticas para manejo da infecção pelo HIV em crianças e adolescentes - Módulo 2: diagnóstico, manejo e tratamento de crianças e adolescentes vivendo com HIV</td>
+                    <td>10</td>
+                    <td>5</td>
+                    <td>50.00%</td>
+                </tr>
+
+                <tr>
+                    <td>Protocolo clínico e diretrizes terapêuticas da asma</td>
+                    <td>10</td>
+                    <td>7</td>
+                    <td>70.00%</td>
+                </tr>
+
+                <tr>
+                    <td>Protocolo de uso do blinatumomabe para leucemia linfoblástica aguda (lla) b derivada pediátrica em primeira recidiva medular de alto risco</td>
+                    <td>10</td>
+                    <td>7</td>
+                    <td>70.00%</td>
+                </tr>
+
+                <tr>
+                    <td>Protocolo clínico e diretrizes terapêuticas da dermatite atópica</td>
+                    <td>10</td>
+                    <td>5</td>
+                    <td>50.00%</td>
+                </tr>
+
+                <tr>
+                    <td>Protocolo clínico e diretrizes terapêuticas do acidente vascular cerebral isquêmico agudo</td>
+                    <td>10</td>
+                    <td>8</td>
+                    <td>80.00%</td>
+                </tr>
+
+                <tr>
+                    <td>Protocolo de uso do distrator osteogênico mandibular (DOM) para o tratamento de deformidades crânio e buco-maxilo-faciais congênitas ou adquiridas</td>
+                    <td>10</td>
+                    <td>7</td>
+                    <td>70.00%</td>
+                </tr>
+
+                <tr>
+                    <td>Protocolo clínico e diretrizes terapêuticas do glaucoma</td>
+                    <td>10</td>
+                    <td>7</td>
+                    <td>70.00%</td>
+                </tr>
+
+                <tr>
+                    <td>Diretrizes diagnósticas e terapêuticas do mieloma múltiplo</td>
+                    <td>10</td>
+                    <td>6</td>
+                    <td>60.00%</td>
+                </tr>
+
+                <tr>
+                    <td>Protocolo clínico e diretrizes terapêuticas da osteoporose</td>
+                    <td>10</td>
+                    <td>6</td>
+                    <td>60.00%</td>
+                </tr>
+
+                <tr>
+                    <td>Protocolo clínico e diretrizes terapêuticas para manejo da infecção pelo hiv em adultos: módulo 2 coinfecções e infecções oportunistas</td>
+                    <td>10</td>
+                    <td>5</td>
+                    <td>50.00%</td>
+                </tr>
+
+                <tr>
+                    <td>Protocolo clínico e diretrizes terapêuticas para manejo da infecção pelo HIV em adultos: Módulo 1 - Tratamento</td>
+                    <td>10</td>
+                    <td>7</td>
+                    <td>70.00%</td>
+                </tr>
+
+                <tr>
+                    <td>Protocolo clínico e diretrizes terapêuticas da lipofuscinose ceroide neuronal tipo 2</td>
+                    <td>10</td>
+                    <td>9</td>
+                    <td>90.00%</td>
+                </tr>
+
+                <tr>
+                    <td>Protocolo clínico e diretrizes terapêuticas de hepatite B e coinfecções</td>
+                    <td>10</td>
+                    <td>6</td>
+                    <td>60.00%</td>
+                </tr>
+
+                <tr>
+                    <td>Protocolo clínico e diretrizes terapêuticas - diabete melito tipo 1</td>
+                    <td>10</td>
+                    <td>7</td>
+                    <td>70.00%</td>
+                </tr>
+
+                <tr>
+                    <td>Protocolo clínico e diretrizes terapêuticas da síndrome de falência medular</td>
+                    <td>10</td>
+                    <td>6</td>
+                    <td>60.00%</td>
+                </tr>
+
+                <tr>
+                    <td>Protocolo clínico e diretrizes terapêuticas da hanseníase</td>
+                    <td>10</td>
+                    <td>9</td>
+                    <td>90.00%</td>
+                </tr>
+
+                <tr>
+                    <td>Degeneração macular relacionada à idade</td>
+                    <td>10</td>
+                    <td>6</td>
+                    <td>60.00%</td>
+                </tr>
+
+                <tr>
+                    <td>Protocolo clínico e diretrizes terapêuticas da dislipidemia: prevenção de eventos cardiovasculares e pancreatite</td>
+                    <td>10</td>
+                    <td>9</td>
+                    <td>90.00%</td>
+                </tr>
+
+                <tr>
+                    <td>Protocolo clínico e diretrizes terapêuticas - Lúpus eritematoso sistêmico</td>
+                    <td>10</td>
+                    <td>9</td>
+                    <td>90.00%</td>
+                </tr>
+
+                <tr>
+                    <td>Diretrizes diagnósticas e terapêuticas do melanoma cutâneo</td>
+                    <td>10</td>
+                    <td>4</td>
+                    <td>40.00%</td>
+                </tr>
+
+                <tr>
+                    <td>Diretrizes diagnósticas e terapêuticas do carcinoma de células renais</td>
+                    <td>10</td>
+                    <td>8</td>
+                    <td>80.00%</td>
+                </tr>
+
+                <tr>
+                    <td>Protocolo clínico e diretrizes terapêuticas da síndrome mielodisplásica de baixo risco</td>
+                    <td>10</td>
+                    <td>7</td>
+                    <td>70.00%</td>
+                </tr>
+
+                <tr>
+                    <td>Diretrizes diagnósticas e terapêuticas do carcinoma hepatocelular no adulto</td>
+                    <td>10</td>
+                    <td>6</td>
+                    <td>60.00%</td>
+                </tr>
+
+                <tr>
+                    <td>Protocolo clínico e diretrizes terapêuticas da esclerose sistêmica</td>
+                    <td>10</td>
+                    <td>6</td>
+                    <td>60.00%</td>
+                </tr>
+
+                <tr>
+                    <td>Protocolo clínico e diretrizes terapêuticas da osteogênese imperfeita</td>
+                    <td>10</td>
+                    <td>5</td>
+                    <td>50.00%</td>
+                </tr>
+
+                <tr>
+                    <td>Transtorno do déficit de atenção com hiperatividade</td>
+                    <td>10</td>
+                    <td>9</td>
+                    <td>90.00%</td>
+                </tr>
+
+                <tr>
+                    <td>Distúrbio mineral ósseo na doença renal crônica</td>
+                    <td>10</td>
+                    <td>5</td>
+                    <td>50.00%</td>
+                </tr>
+
+                <tr>
+                    <td>Protocolo clínico e diretrizes terapêuticas da puberdade precoce central</td>
+                    <td>10</td>
+                    <td>5</td>
+                    <td>50.00%</td>
+                </tr>
+
+                <tr>
+                    <td>Protocolo clínico e diretrizes terapêuticas das ictioses hereditárias</td>
+                    <td>10</td>
+                    <td>7</td>
+                    <td>70.00%</td>
+                </tr>
+
+                <tr>
+                    <td>Protocolo clínico e diretrizes terapêuticas - Miastenia gravis</td>
+                    <td>10</td>
+                    <td>6</td>
+                    <td>60.00%</td>
+                </tr>
+
+                <tr>
+                    <td>Linha de Cuidado do Infarto Agudo do Miocárdio e Protocolo Clínico sobre Síndromes Coronarianas Agudas</td>
+                    <td>10</td>
+                    <td>7</td>
+                    <td>70.00%</td>
+                </tr>
+
+                <tr>
+                    <td>Protocolo de uso da cirurgia de citorredução e hipertermoquimioterapia em caso de mesotelioma peritoneal maligno</td>
+                    <td>10</td>
+                    <td>6</td>
+                    <td>60.00%</td>
+                </tr>
+
+                <tr>
+                    <td>Protocolo de uso da cirurgia de citorredução e hipertermoquimioterapia em caso de pseudomixoma peritoneal</td>
+                    <td>10</td>
+                    <td>6</td>
+                    <td>60.00%</td>
+                </tr>
+
+                <tr>
+                    <td>Protocolo de uso de fatores de coagulação para a profilaxia primária em caso de hemofilia grave</td>
+                    <td>10</td>
+                    <td>8</td>
+                    <td>80.00%</td>
+                </tr>
+
+                <tr>
+                    <td>Comportamento agressivo no transtorno do espectro do autismo</td>
+                    <td>10</td>
+                    <td>7</td>
+                    <td>70.00%</td>
+                </tr>
+
+                <tr>
+                    <td>Protocolo clínico e diretrizes terapêuticas da síndrome de Guillain-Barré</td>
+                    <td>10</td>
+                    <td>8</td>
+                    <td>80.00%</td>
+                </tr>
+
+                <tr>
+                    <td>Protocolo clínico e diretrizes terapêuticas da hiperprolactinemia</td>
+                    <td>10</td>
+                    <td>7</td>
+                    <td>70.00%</td>
+                </tr>
+
+                <tr>
+                    <td>Protocolo clínico e diretrizes terapêuticas púrpura trombocitopênica idiopática</td>
+                    <td>10</td>
+                    <td>7</td>
+                    <td>70.00%</td>
+                </tr>
+
+                <tr>
+                    <td>Protocolo clínico e diretrizes terapêuticas da doença de Paget</td>
+                    <td>10</td>
+                    <td>6</td>
+                    <td>60.00%</td>
+                </tr>
+
+                <tr>
+                    <td>Imunossupressão no transplante cardíaco</td>
+                    <td>10</td>
+                    <td>6</td>
+                    <td>60.00%</td>
+                </tr>
+
+                <tr>
+                    <td>Protocolo clínico e diretrizes terapêuticas para imunossupressão em transplante renal</td>
+                    <td>10</td>
+                    <td>4</td>
+                    <td>40.00%</td>
+                </tr>
+
+                <tr>
+                    <td>Protocolo clínico e diretrizes terapêuticas - Espasticidade</td>
+                    <td>10</td>
+                    <td>7</td>
+                    <td>70.00%</td>
+                </tr>
+
+                <tr>
+                    <td>Protocolo clínico e diretrizes terapêuticas de raquitismo e osteomalácia</td>
+                    <td>10</td>
+                    <td>7</td>
+                    <td>70.00%</td>
+                </tr>
+
+                <tr>
+                    <td>Protocolo clínico e diretrizes terapêuticas da doença pulmonar obstrutiva crônica</td>
+                    <td>10</td>
+                    <td>8</td>
+                    <td>80.00%</td>
+                </tr>
+
+                <tr>
+                    <td>Diretrizes diagnósticas e terapêuticas – Mesilato de imatinibe no tratamento da leucemia linfoblástica aguda cromossoma Philadelphia positivo do adulto</td>
+                    <td>10</td>
+                    <td>6</td>
+                    <td>60.00%</td>
+                </tr>
+
+                <tr>
+                    <td>Diretrizes diagnósticas e terapêuticas – Mesilato de imatinibe no tratamento da leucemia linfoblástica aguda cromossoma Philadelphia positivo de crianças e adolescentes</td>
+                    <td>10</td>
+                    <td>5</td>
+                    <td>50.00%</td>
+                </tr>
+
+                <tr>
+                    <td>Protocolo clínico e diretrizes terapêuticas da leucemia mieloide crônica do adulto</td>
+                    <td>10</td>
+                    <td>5</td>
+                    <td>50.00%</td>
+                </tr>
+
+                <tr>
+                    <td>Diretrizes brasileiras para os cuidados de pacientes com epidermólise bolhosa</td>
+                    <td>10</td>
+                    <td>7</td>
+                    <td>70.00%</td>
+                </tr>
+
+                <tr>
+                    <td>Protocolo clínico e diretrizes terapêuticas para a prevenção de tromboembolismo venoso em gestantes com trombofilia</td>
+                    <td>10</td>
+                    <td>6</td>
+                    <td>60.00%</td>
+                </tr>
+
+                <tr>
+                    <td>Protocolo clínico e diretrizes terapêuticas da retinopatia diabética</td>
+                    <td>10</td>
+                    <td>8</td>
+                    <td>80.00%</td>
+                </tr>
+
+                <tr>
+                    <td>Protocolo Clínico e Diretrizes Terapêuticas de Linfangioleiomiomatose</td>
+                    <td>10</td>
+                    <td>10</td>
+                    <td>100.00%</td>
+                </tr>
+
+                <tr>
+                    <td>Anemia na doença renal crônica - reposição de ferro</td>
+                    <td>10</td>
+                    <td>7</td>
+                    <td>70.00%</td>
+                </tr>
+
+                <tr>
+                    <td>Protocolo clínico e diretrizes terapêuticas - Esquizofrenia</td>
+                    <td>10</td>
+                    <td>7</td>
+                    <td>70.00%</td>
+                </tr>
+
+                <tr>
+                    <td>Protocolo clínico e diretrizes terapêuticas da leucemia mieloide crônica de crianças e adolescentes</td>
+                    <td>10</td>
+                    <td>6</td>
+                    <td>60.00%</td>
+                </tr>
+
+                <tr>
+                    <td>Protocolo clínico e diretrizes terapêuticas – Insuficiência adrenal</td>
+                    <td>10</td>
+                    <td>8</td>
+                    <td>80.00%</td>
+                </tr>
+
+                <tr>
+                    <td>Protocolo clínico e diretrizes terapêuticas - Transtorno esquizoafetivo</td>
+                    <td>10</td>
+                    <td>7</td>
+                    <td>70.00%</td>
+                </tr>
+
+                <tr>
+                    <td>Protocolo clínico e diretrizes terapêuticas da mucopolissacaridose do tipo VII</td>
+                    <td>10</td>
+                    <td>6</td>
+                    <td>60.00%</td>
+                </tr>
+
+                <tr>
+                    <td>Protocolo clínico e diretrizes terapêuticas para atenção integral às pessoas com infecções sexualmente transmissíveis (IST)</td>
+                    <td>10</td>
+                    <td>8</td>
+                    <td>80.00%</td>
+                </tr>
+
+            </tbody>
+        </table>
+    </div>
+
+    <div class="results">
+        <h2>Resultados Detalhados (Primeiros 10)</h2>
+
+        <div class="result-item">
+            <div class="result-header">
+                <div class="result-title">Protocolo clínico e diretrizes terapêuticas da vasculite associada aos anticorpos anti-citoplasma de neutrófilos - Item 0</div>
+                <div class="result-status status-correct">Correto</div>
+            </div>
+            <div class="result-content">
+                <div class="result-label">Pergunta:</div>
+                <div class="result-text">No que diz respeito ao protocolo clínico "Protocolo Clínico e Diretrizes Terapêuticas da Vasculite Associada aos Anticorpos Anti-citoplasma de Neutrófilos", a afirmação a seguir é verdadeira ou falsa? No Brasil, há carência de investigações epidemiológicas detalhadas sobre incidência e prevalência da vasculite ANCA-associada, o que reforça a necessidade de estudos para estruturar políticas de saúde alinhadas às especificidades regionais.</div>
+                
+                <div class="result-label">Resposta Esperada:</div>
+                <div class="result-text">Verdadeiro</div>
+                
+                <div class="result-label">Resposta do Modelo:</div>
+                <div class="result-text">Verdadeiro</div>
+            </div>
+        </div>
+
+        <div class="result-item">
+            <div class="result-header">
+                <div class="result-title">Protocolo clínico e diretrizes terapêuticas da vasculite associada aos anticorpos anti-citoplasma de neutrófilos - Item 1</div>
+                <div class="result-status status-correct">Correto</div>
+            </div>
+            <div class="result-content">
+                <div class="result-label">Pergunta:</div>
+                <div class="result-text">No que diz respeito ao protocolo clínico "Protocolo Clínico e Diretrizes Terapêuticas da Vasculite Associada aos Anticorpos Anti-citoplasma de Neutrófilos", a afirmação a seguir é verdadeira ou falsa? No Brasil, há estudos abrangentes e consolidados que mapeiam com precisão a incidência e a prevalência da vasculite ANCA-associada, permitindo estruturar políticas de saúde já plenamente alinhadas às especificidades regionais.</div>
+                
+                <div class="result-label">Resposta Esperada:</div>
+                <div class="result-text">Falso</div>
+                
+                <div class="result-label">Resposta do Modelo:</div>
+                <div class="result-text">Falso</div>
+            </div>
+        </div>
+
+        <div class="result-item">
+            <div class="result-header">
+                <div class="result-title">Protocolo clínico e diretrizes terapêuticas da vasculite associada aos anticorpos anti-citoplasma de neutrófilos - Item 2</div>
+                <div class="result-status status-incorrect">Incorreto</div>
+            </div>
+            <div class="result-content">
+                <div class="result-label">Pergunta:</div>
+                <div class="result-text">No que diz respeito ao protocolo clínico "Protocolo Clínico e Diretrizes Terapêuticas da Vasculite Associada aos Anticorpos Anti-citoplasma de Neutrófilos", a afirmação a seguir é verdadeira ou falsa? Na estratificação EUVAS, a doença generalizada corresponde a risco iminente para a função renal ou outros órgãos, evidenciado por creatinina sérica menor que 500 μmol/L ou 5,6 mg/dL.</div>
+                
+                <div class="result-label">Resposta Esperada:</div>
+                <div class="result-text">Verdadeiro</div>
+                
+                <div class="result-label">Resposta do Modelo:</div>
+                <div class="result-text">Falso</div>
+            </div>
+        </div>
+
+        <div class="result-item">
+            <div class="result-header">
+                <div class="result-title">Protocolo clínico e diretrizes terapêuticas da vasculite associada aos anticorpos anti-citoplasma de neutrófilos - Item 3</div>
+                <div class="result-status status-correct">Correto</div>
+            </div>
+            <div class="result-content">
+                <div class="result-label">Pergunta:</div>
+                <div class="result-text">No que diz respeito ao protocolo clínico "Protocolo Clínico e Diretrizes Terapêuticas da Vasculite Associada aos Anticorpos Anti-citoplasma de Neutrófilos", a afirmação a seguir é verdadeira ou falsa? Na estratificação EUVAS, a doença generalizada corresponde a risco iminente para a função renal ou outros órgãos, evidenciado por creatinina sérica superior a 500 μmol/L ou 5,6 mg/dL.</div>
+                
+                <div class="result-label">Resposta Esperada:</div>
+                <div class="result-text">Falso</div>
+                
+                <div class="result-label">Resposta do Modelo:</div>
+                <div class="result-text">Falso</div>
+            </div>
+        </div>
+
+        <div class="result-item">
+            <div class="result-header">
+                <div class="result-title">Protocolo clínico e diretrizes terapêuticas da vasculite associada aos anticorpos anti-citoplasma de neutrófilos - Item 4</div>
+                <div class="result-status status-correct">Correto</div>
+            </div>
+            <div class="result-content">
+                <div class="result-label">Pergunta:</div>
+                <div class="result-text">No que diz respeito ao protocolo clínico "Protocolo Clínico e Diretrizes Terapêuticas da Vasculite Associada aos Anticorpos Anti-citoplasma de Neutrófilos", a afirmação a seguir é verdadeira ou falsa? O BVAS v.3 deve ser aplicado em todas as consultas, pontuando apenas manifestações atribuídas à vasculite ativa, com remissão definida por pontuação zero e atividade de doença por pontuação maior ou igual a 1.</div>
+                
+                <div class="result-label">Resposta Esperada:</div>
+                <div class="result-text">Verdadeiro</div>
+                
+                <div class="result-label">Resposta do Modelo:</div>
+                <div class="result-text">Verdadeiro</div>
+            </div>
+        </div>
+
+        <div class="result-item">
+            <div class="result-header">
+                <div class="result-title">Protocolo clínico e diretrizes terapêuticas da vasculite associada aos anticorpos anti-citoplasma de neutrófilos - Item 5</div>
+                <div class="result-status status-correct">Correto</div>
+            </div>
+            <div class="result-content">
+                <div class="result-label">Pergunta:</div>
+                <div class="result-text">No que diz respeito ao protocolo clínico "Protocolo Clínico e Diretrizes Terapêuticas da Vasculite Associada aos Anticorpos Anti-citoplasma de Neutrófilos", a afirmação a seguir é verdadeira ou falsa? O BVAS v.3 deve ser aplicado em todas as consultas, incluindo dano permanente na pontuação, com remissão definida por pontuação zero e atividade de doença por pontuação maior ou igual a 1.</div>
+                
+                <div class="result-label">Resposta Esperada:</div>
+                <div class="result-text">Falso</div>
+                
+                <div class="result-label">Resposta do Modelo:</div>
+                <div class="result-text">Falso</div>
+            </div>
+        </div>
+
+        <div class="result-item">
+            <div class="result-header">
+                <div class="result-title">Protocolo clínico e diretrizes terapêuticas da vasculite associada aos anticorpos anti-citoplasma de neutrófilos - Item 6</div>
+                <div class="result-status status-correct">Correto</div>
+            </div>
+            <div class="result-content">
+                <div class="result-label">Pergunta:</div>
+                <div class="result-text">No que diz respeito ao protocolo clínico "Protocolo Clínico e Diretrizes Terapêuticas da Vasculite Associada aos Anticorpos Anti-citoplasma de Neutrófilos", a afirmação a seguir é verdadeira ou falsa? Na suspeita de mononeurite múltipla associada à vasculite, é indicada a confirmação por estudos eletrofisiológicos, integrando os achados clínicos na consolidação do diagnóstico de acometimento neurológico.</div>
+                
+                <div class="result-label">Resposta Esperada:</div>
+                <div class="result-text">Verdadeiro</div>
+                
+                <div class="result-label">Resposta do Modelo:</div>
+                <div class="result-text">Verdadeiro</div>
+            </div>
+        </div>
+
+        <div class="result-item">
+            <div class="result-header">
+                <div class="result-title">Protocolo clínico e diretrizes terapêuticas da vasculite associada aos anticorpos anti-citoplasma de neutrófilos - Item 7</div>
+                <div class="result-status status-correct">Correto</div>
+            </div>
+            <div class="result-content">
+                <div class="result-label">Pergunta:</div>
+                <div class="result-text">No que diz respeito ao protocolo clínico "Protocolo Clínico e Diretrizes Terapêuticas da Vasculite Associada aos Anticorpos Anti-citoplasma de Neutrófilos", a afirmação a seguir é verdadeira ou falsa? Na suspeita de mononeurite múltipla associada à vasculite, é indicada a confirmação por biópsia muscular, integrando os achados clínicos na consolidação do diagnóstico de acometimento neurológico.</div>
+                
+                <div class="result-label">Resposta Esperada:</div>
+                <div class="result-text">Falso</div>
+                
+                <div class="result-label">Resposta do Modelo:</div>
+                <div class="result-text">Falso</div>
+            </div>
+        </div>
+
+        <div class="result-item">
+            <div class="result-header">
+                <div class="result-title">Protocolo clínico e diretrizes terapêuticas da vasculite associada aos anticorpos anti-citoplasma de neutrófilos - Item 8</div>
+                <div class="result-status status-incorrect">Incorreto</div>
+            </div>
+            <div class="result-content">
+                <div class="result-label">Pergunta:</div>
+                <div class="result-text">No que diz respeito ao protocolo clínico "Protocolo Clínico e Diretrizes Terapêuticas da Vasculite Associada aos Anticorpos Anti-citoplasma de Neutrófilos", a afirmação a seguir é verdadeira ou falsa? O regime de indução com rituximabe recomenda 375 mg/m2 por infusão intravenosa semanal por quatro semanas, iniciando a 50 mg/h com incrementos de 50 mg/h a cada 30 minutos até 400 mg/h, após premedicação analgésica, anti-histamínica e glicocorticoide.</div>
+                
+                <div class="result-label">Resposta Esperada:</div>
+                <div class="result-text">Verdadeiro</div>
+                
+                <div class="result-label">Resposta do Modelo:</div>
+                <div class="result-text">Falso</div>
+            </div>
+        </div>
+
+        <div class="result-item">
+            <div class="result-header">
+                <div class="result-title">Protocolo clínico e diretrizes terapêuticas da vasculite associada aos anticorpos anti-citoplasma de neutrófilos - Item 9</div>
+                <div class="result-status status-correct">Correto</div>
+            </div>
+            <div class="result-content">
+                <div class="result-label">Pergunta:</div>
+                <div class="result-text">No que diz respeito ao protocolo clínico "Protocolo Clínico e Diretrizes Terapêuticas da Vasculite Associada aos Anticorpos Anti-citoplasma de Neutrófilos", a afirmação a seguir é verdadeira ou falsa? O regime de indução com rituximabe recomenda 375 mg/m2 por via subcutânea semanal por quatro semanas, iniciando a 50 mg/h com incrementos de 50 mg/h a cada 30 minutos até 400 mg/h, após premedicação analgésica, anti-histamínica e glicocorticoide.</div>
+                
+                <div class="result-label">Resposta Esperada:</div>
+                <div class="result-text">Falso</div>
+                
+                <div class="result-label">Resposta do Modelo:</div>
+                <div class="result-text">Falso</div>
+            </div>
+        </div>
+
+        <p><em>Mostrando 10 de 1000 resultados. Para ver todos os resultados, consulte o arquivo CSV gerado.</em></p>
+
+    </div>
+</body>
+</html>
