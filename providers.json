@@ -1,14 +1,24 @@
 {
   "providers": [
     {
-      "name": "GPT-4o",
+      "name": "GPT-4.1",
       "type": "openai",
-      "model": "gpt-4o",
+      "model": "gpt-4.1",
       "api_key": "${OPENAI_API_KEY}",
       "base_url": "https://api.openai.com/v1",
       "temperature": 0.0,
       "max_tokens": 12000,
-      "active": false
+      "active": true
+    },
+    {
+      "name": "GPT-5",
+      "type": "openai",
+      "model": "gpt-5",
+      "api_key": "${OPENAI_API_KEY}",
+      "base_url": "https://api.openai.com/v1",
+      "temperature": 0.0,
+      "max_tokens": 12000,
+      "active": true
     },
     {
       "name": "MedGemma-27B-Q8",
@@ -17,7 +27,7 @@
       "base_url": "http://localhost:11434",
       "temperature": 0.0,
       "max_tokens": 12000,
-      "active": true
+      "active": false
     },
     {
       "name": "Claude-Sonnet-4-Bedrock",
@@ -27,12 +37,22 @@
       "aws_bearer_token": "${AWS_BEARER_TOKEN_BEDROCK}",
       "temperature": 0.0,
       "max_tokens": 12000,
-      "active": true
+      "active": false
     },
     {
       "name": "Maritaca-Sabiazinho-3",
       "type": "maritaca",
       "model": "sabiazinho-3",
+      "api_key": "${MARITACA_API_KEY}",
+      "base_url": "https://chat.maritaca.ai/api",
+      "temperature": 0.0,
+      "max_tokens": 12000,
+      "active": true
+    },
+    {
+      "name": "Maritaca-Sabia-3.1",
+      "type": "maritaca",
+      "model": "sabia-3.1",
       "api_key": "${MARITACA_API_KEY}",
       "base_url": "https://chat.maritaca.ai/api",
       "temperature": 0.0,
