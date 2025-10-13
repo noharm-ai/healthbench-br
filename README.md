@@ -17,19 +17,27 @@ O HealthBench-BR é um benchmark especializado para avaliar a performance de mod
 
 Aqui estão dois exemplos de perguntas do benchmark, com suas respostas esperadas:
 
-**Pergunta 1 (Verdadeiro):**
-"No que diz respeito ao protocolo clínico \"Protocolo Clínico e Diretrizes Terapêuticas da Vasculite Associada aos Anticorpos Anti-citoplasma de Neutrófilos\", a afirmação a seguir é verdadeira ou falsa? No Brasil, há carência de investigações epidemiológicas detalhadas sobre incidência e prevalência da vasculite ANCA-associada, o que reforça a necessidade de estudos para estruturar políticas de saúde alinhadas às especificidades regionais."
-
+**Pergunta 1:** A aspirina é um anti-inflamatório não esteroide.  
 **Resposta esperada:** Verdadeiro
 
-**Pergunta 2 (Falso):**
-"No que diz respeito ao protocolo clínico \"Protocolo Clínico e Diretrizes Terapêuticas da Vasculite Associada aos Anticorpos Anti-citoplasma de Neutrófilos\", a afirmação a seguir é verdadeira ou falsa? No Brasil, há estudos abrangentes e consolidados que mapeiam com precisão a incidência e a prevalência da vasculite ANCA-associada, permitindo estruturar políticas de saúde já plenamente alinhadas às especificidades regionais."
-
+**Pergunta 2:** O diabetes tipo 1 é causado por obesidade.  
 **Resposta esperada:** Falso
 
 ## 📈 Resultados de Benchmark
 
-Abaixo estão os resultados de avaliação dos principais modelos LLM no HealthBench-BR, utilizando as primeiras 50 perguntas do dataset:
+Abaixo estão os resultados de avaliação dos principais modelos LLM no HealthBench-BR, utilizando o dataset completo (1000 perguntas):
+
+| Provider              | Tipo      | Modelo         | Total | Acertos | Acurácia | Tempo (s) |
+|-----------------------|-----------|----------------|-------|---------|----------|-----------|
+| GPT-4.1              | openai   | gpt-4.1       | 1000 | 739    | 73.90%  | 275.9    |
+| GPT-5                | openai   | gpt-5         | 1000 | 809    | 80.90%  | 1482.6   |
+| Maritaca-Sabiazinho-3| maritaca | sabiazinho-3  | 1000 | 621    | 62.10%  | 92.3     |
+| Maritaca-Sabia-3.1   | maritaca | sabia-3.1     | 1000 | 668    | 66.80%  | 131.7    |
+
+🏆 **Melhor desempenho:** GPT-5 com 80.90% de acurácia.
+
+<details>
+<summary>Resultados preliminares (50 perguntas)</summary>
 
 | Provider              | Tipo      | Modelo         | Total | Acertos | Acurácia | Tempo (s) |
 |-----------------------|-----------|----------------|-------|---------|----------|-----------|
@@ -38,7 +46,23 @@ Abaixo estão os resultados de avaliação dos principais modelos LLM no HealthB
 | Maritaca-Sabiazinho-3| maritaca | sabiazinho-3  | 50   | 30     | 60.00%  | 13.3     |
 | Maritaca-Sabia-3.1   | maritaca | sabia-3.1     | 50   | 36     | 72.00%  | 37.1     |
 
-🏆 **Melhor desempenho:** GPT-5 com 84.00% de acurácia.
+</details>
+
+<details>
+<summary>Resultados preliminares adicionais (50 perguntas)</summary>
+
+Dataset testado: Primeiras 50 perguntas do HealthBench-BR  
+Data/Hora: 2025-10-04 16:58:36  
+
+| Provider              | Acurácia | Acertos/Total |
+|-----------------------|----------|---------------|
+| Claude-Sonnet-4-Bedrock | 74.00%  | 37/50        |
+| Maritaca-Sabiazinho-3  | 62.00%  | 31/50        |
+| MedGemma-27B-Q8        | 58.00%  | 29/50        |
+
+Acurácia média: 64.67%
+
+</details>
 
 ## 🏗️ Estrutura do Projeto
 
